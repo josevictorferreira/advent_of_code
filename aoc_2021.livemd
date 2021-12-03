@@ -112,3 +112,40 @@ new_directions =
     end
   end)
 ```
+
+## Day 3
+
+### Part 1
+
+```elixir
+input = """
+00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010
+"""
+```
+
+```elixir
+v =
+  input
+  |> String.split("\n", trim: true)
+  |> Enum.map(fn v -> v |> String.split("", trim: true) end)
+  |> Enum.zip_with(fn values -> values end)
+  |> Enum.map(&Enum.frequencies/1)
+  |> Enum.map(fn v -> v |> Enum.sort_by(fn {_k, v} -> v end, :desc) end)
+  |> Enum.map(fn v -> v |> Enum.map(fn k -> Kernel.elem(k, 0) end) end)
+  |> Enum.zip()
+  |> Enum.map(&Tuple.to_list/1)
+  |> Enum.map(&Enum.join/1)
+  |> Enum.map(fn v -> v |> Integer.parse(2) |> elem(0) end)
+  |> Enum.product()
+```
