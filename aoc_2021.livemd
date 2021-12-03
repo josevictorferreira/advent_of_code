@@ -1,0 +1,47 @@
+# Advent of Code - 2021
+
+## Setup Dependencies
+
+```elixir
+Mix.install([
+  {:kino, github: "livebook-dev/kino"}
+])
+```
+
+## Day 1
+
+### Part 1
+
+```elixir
+input = """
+199
+200
+208
+210
+200
+207
+240
+269
+260
+263
+"""
+```
+
+```elixir
+input
+|> String.split("\n", trim: true)
+|> Enum.map(fn value -> value |> String.to_integer() end)
+|> Enum.chunk_every(2, 1, :discard)
+|> Enum.count(fn [first, second] -> second > first end)
+```
+
+### Part 2
+
+```elixir
+input
+|> String.split("\n", trim: true)
+|> Enum.map(fn value -> value |> String.to_integer() end)
+|> Enum.chunk_every(3, 1, :discard)
+|> Enum.chunk_every(2, 1, :discard)
+|> Enum.count(fn [[first, v1, v2], [v1, v2, last]] -> last > first end)
+```
