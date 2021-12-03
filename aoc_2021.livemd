@@ -45,3 +45,70 @@ input
 |> Enum.chunk_every(2, 1, :discard)
 |> Enum.count(fn [[first, v1, v2], [v1, v2, last]] -> last > first end)
 ```
+
+## Day 2
+
+### Part 1
+
+```elixir
+input = """
+forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2
+"""
+```
+
+```elixir
+directions =
+  input
+  |> String.split("\n", trim: true)
+  |> Enum.map(fn value -> value |> String.split() end)
+  |> Enum.map(fn [direction, value] -> [String.to_atom(direction), String.to_integer(value)] end)
+  |> Enum.group_by(&List.first/1, &List.last/1)
+  |> Enum.map(fn {k, v} -> {k, Enum.sum(v)} end)
+```
+
+```elixir
+horizontal_positon = directions[:forward]
+```
+
+```elixir
+depth = directions[:down] - directions[:up]
+```
+
+### Part 2
+
+```elixir
+new_directions =
+  input
+  |> String.split("\n", trim: true)
+  |> Enum.map(fn value -> value |> String.split() end)
+  |> Enum.map(fn [direction, value] -> [String.to_atom(direction), String.to_integer(value)] end)
+  |> Enum.reduce(%{horizontal: 0, depth: 0, aim: 0}, fn [direction, value], collector ->
+    case direction do
+      :forward ->
+        %{
+          horizontal: collector[:horizontal] + value,
+          depth: collector[:depth] + collector[:aim] * value,
+          aim: collector[:aim]
+        }
+
+      :up ->
+        %{
+          horizontal: collector[:horizontal],
+          depth: collector[:depth],
+          aim: collector[:aim] - value
+        }
+
+      :down ->
+        %{
+          horizontal: collector[:horizontal],
+          depth: collector[:depth],
+          aim: collector[:aim] + value
+        }
+    end
+  end)
+```
