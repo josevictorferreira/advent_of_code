@@ -236,7 +236,7 @@ end)
 
 ```elixir
 input = """
-7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+7,4,9,5,11,17,23,2,0,14,21,24,10,16,99,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
  8  2 23  4 24
@@ -357,4 +357,84 @@ plays
     {:halt, item * Bingo.sum_blanks(Enum.fetch!(won_board, 0))}
   end
 end)
+```
+
+### Part 2
+
+```elixir
+defmodule Bingo do
+  def play_bingo(plays, boards) do
+    plays
+    |> Enum.reduce_while(boards, fn item, collector ->
+      rem_boards =
+        collector
+        |> Enum.map(fn x ->
+          x
+          |> Bingo.mark_value(item)
+        end)
+        |> Enum.filter(&Bingo.check_if_not_won/1)
+
+      if length(rem_boards) == 0 do
+        {:halt, item * (collector |> Enum.fetch!(0) |> mark_value(item) |> sum_blanks)}
+      else
+        {:cont, rem_boards}
+      end
+    end)
+  end
+
+  def check_if_won(board) do
+    check_if_won_row(board) || check_if_won_col(board)
+  end
+
+  def check_if_not_won(board) do
+    !(check_if_won_row(board) || check_if_won_col(board))
+  end
+
+  def mark_value(board, value) do
+    board
+    |> Enum.map(fn x ->
+      x
+      |> Enum.map(fn {v, m} ->
+        if v == value do
+          {v, 1}
+        else
+          {v, m}
+        end
+      end)
+    end)
+  end
+
+  def sum_blanks(board) do
+    board
+    |> Enum.reduce(0, fn item, collector ->
+      collector +
+        (item
+         |> Enum.map(fn {x, v} ->
+           if v == 0 do
+             x
+           else
+             0
+           end
+         end)
+         |> Enum.sum())
+    end)
+  end
+
+  defp check_if_won_row(board) do
+    board
+    |> Enum.map(fn x -> Enum.all?(x, fn v -> elem(v, 1) == 1 end) end)
+    |> Enum.any?()
+  end
+
+  defp check_if_won_col(board) do
+    board
+    |> Enum.zip_with(fn v -> v end)
+    |> Enum.map(fn x -> Enum.all?(x, fn v -> elem(v, 1) == 1 end) end)
+    |> Enum.any?()
+  end
+end
+```
+
+```elixir
+Bingo.play_bingo(plays, boards)
 ```
