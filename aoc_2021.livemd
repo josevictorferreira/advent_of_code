@@ -529,3 +529,43 @@ end)
   v > 1
 end)
 ```
+
+## Day 6
+
+### Part 1
+
+```elixir
+input = "3,4,3,1,2"
+```
+
+```elixir
+values =
+  input
+  |> String.split(",", trim: true)
+  |> Enum.map(&String.to_integer/1)
+```
+
+```elixir
+values
+|> Enum.reduce_while(values, fn _it, collector ->
+  if length(collector) >= 80 do
+    {:halt, collector}
+  else
+    {:cont,
+     Enum.reduce(collector, [], fn v, c ->
+       case v do
+         0 ->
+           c ++ [6, 8]
+
+         _ ->
+           c ++ [v - 1]
+       end
+     end)}
+  end
+end)
+```
+
+```elixir
+list = [1, 2, 3]
+[] ++ [3, 4]
+```
